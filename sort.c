@@ -57,5 +57,28 @@ void insertion_sort(int *numbers, unsigned count) {
 	memcpy(numbers, new, count*sizeof(int));
 }
 
-sorting_fn sorting_fns[] = {bubble_sort, insertion_sort, NULL};
+
+
+//comparison function for the Q wrapper function below
+//allows the 'compare' function defined weakly above to
+//interface with stdlib:qsort
+int compar(const void* a, const void* b)
+{
+  if(compare(*(int*)a, *(int*)b) < 0) return -1; //a goes before b
+  else if(compare(*(int*)a,*(int*)b) > 0) return 1; //b goes before a
+  else return 0; //they are equal, order doesn't matter
+}
+
+
+// wraps qsort to be used by the functor 
+// sorting_fn
+// requires: 'count' to be the number of elements
+// in the array 'numbers' to be sorted
+void Q(int* numbers, unsigned count)
+{
+  qsort(numbers, count, sizeof(int), compar);
+}
+
+
+sorting_fn sorting_fns[] = {bubble_sort, insertion_sort, Q, NULL};
 
